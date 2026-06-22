@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Reveal from './Reveal'
 
 const testimonials = [
   {
@@ -12,14 +13,14 @@ const testimonials = [
   {
     id: 2,
     name: 'Akbarshoh Tojiboyev',
-    role: 'Urolog, Androlog',
-    text: "Telegram botimiz orqali bemorlarni qabul qilish va ularga obuna xizmatlarini ko'rsatish tizimi mukammal ishlamoqda. Avval qog'oz va telefonda qilinadigan ishlar endi to'liq avtomatlashdi.",
+    role: 'Urolog-androlog, Shifo Med klinikasi',
+    text: "Telegram botimiz orqali bemorlarni qabul qilish va obuna xizmatlari mukammal ishlamoqda. Avval qo'lda bajarilgan qabul jarayonining 80% endi avtomatlashdi — kuniga bir necha soat tejayapmiz.",
     project: 'Uro Bot'
   },
   {
     id: 3,
     name: 'Dr. Alisher Rustamov',
-    role: 'Tibbiyot markazi bosh shifokori',
+    role: 'Bosh shifokor, Med Innovatsiya markazi',
     text: "AI Analyzer va Pnevmoniya aniqlash modellari faoliyatimizni ancha tezlashtirdi. Rentgen tasvirlarini tahlil qilishdagi aniqlik va lokal Face Matching tizimi shifoxonamiz raqamli infratuzilmasini yangi bosqichga olib chiqdi.",
     project: 'Pneumonia Detector & AI'
   }
@@ -27,60 +28,210 @@ const testimonials = [
 
 export default function Testimonials() {
   const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
+    const prefersReduced = typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (paused || prefersReduced) return
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % testimonials.length)
     }, 6000)
     return () => clearInterval(interval)
-  }, [])
+  }, [paused, active])
 
   return (
-    <section className="section" id="testimonials" style={{ background: 'linear-gradient(to bottom, transparent, rgba(208, 255, 20, 0.03))' }}>
+    <section className="section t-section" id="testimonials">
+      <div className="orb t-orb orb--drift" aria-hidden="true" />
       <div className="container">
         <div className="section-head">
-          <div>
-            <p className="section-label">04 — Mijozlarimiz</p>
+          <Reveal as="div" data-anim="fade">
+            <p className="section-label u-overline">04 — Mijozlarimiz</p>
             <h2 className="section-title">Ular<br />nima deydi</h2>
-          </div>
+          </Reveal>
         </div>
-        
-        <div className="testimonials-wrapper" style={{ position: 'relative', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: '4rem', color: 'rgba(208, 255, 20, 0.2)', marginBottom: '-2rem', fontFamily: 'serif' }}>"</div>
-          
-          <div style={{ minHeight: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p style={{ fontSize: '1.25rem', lineHeight: '1.6', color: '#fff', fontStyle: 'italic' }}>
-              {testimonials[active].text}
-            </p>
-          </div>
-          
-          <div style={{ marginTop: '2rem' }}>
-            <h4 style={{ color: '#D0FF14', fontSize: '1.1rem', margin: '0 0 0.25rem 0' }}>{testimonials[active].name}</h4>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: '0' }}>
-              {testimonials[active].role} — <span style={{ color: '#fff' }}>{testimonials[active].project}</span>
-            </p>
+
+        <div
+          className="testimonials-wrapper glow-cursor"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
+        >
+          <span aria-hidden="true" className="t-quote-mark glow-text">&ldquo;</span>
+
+          <div aria-live="polite" className="t-stage">
+            {testimonials.map((t, i) => (
+              <div
+                key={t.id}
+                className={`t-slide ${active === i ? 'is-active' : ''}`}
+                aria-hidden={active === i ? undefined : 'true'}
+              >
+                <p className="t-text">{t.text}</p>
+                <div className="t-author">
+                  <h3 className="t-name">{t.name}</h3>
+                  <p className="t-role">
+                    {t.role} — <span className="t-project">{t.project}</span>
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="testimonials-dots" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '3rem' }}>
+          <div className="testimonials-dots" role="tablist" aria-label="Sharhlar">
             {testimonials.map((t, i) => (
-              <button 
+              <button
                 key={t.id}
                 onClick={() => setActive(i)}
-                aria-label={`Show testimonial ${i+1}`}
-                style={{
-                  width: active === i ? '2rem' : '0.5rem',
-                  height: '0.5rem',
-                  borderRadius: '1rem',
-                  background: active === i ? '#D0FF14' : 'rgba(255,255,255,0.2)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-              />
+                aria-label={`Sharh ${i + 1}`}
+                aria-pressed={active === i}
+                className={`t-dot ${active === i ? 'is-active' : ''}`}
+              >
+                <span
+                  className="t-dot-progress"
+                  aria-hidden="true"
+                  style={{ animationPlayState: active === i && !paused ? 'running' : 'paused' }}
+                />
+              </button>
             ))}
           </div>
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .t-section {
+          position: relative;
+          overflow: hidden;
+          background: linear-gradient(to bottom, transparent, var(--yellow-a08));
+        }
+        .t-orb {
+          width: 540px;
+          height: 540px;
+          top: 12%;
+          left: 50%;
+          transform: translateX(-50%);
+          opacity: 0.7;
+        }
+        .testimonials-wrapper {
+          position: relative;
+          max-width: 800px;
+          margin: 0 auto;
+          text-align: center;
+          z-index: 1;
+        }
+        .t-quote-mark {
+          display: block;
+          font-family: var(--font-display), serif;
+          font-size: 7rem;
+          line-height: 0.6;
+          color: var(--yellow-a16);
+          margin-bottom: 0.5rem;
+          pointer-events: none;
+          user-select: none;
+        }
+        .t-stage {
+          position: relative;
+          min-height: 220px;
+        }
+        @media (min-width: 768px) { .t-stage { min-height: 190px; } }
+        .t-slide {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          opacity: 0;
+          transform: translateY(8px);
+          pointer-events: none;
+          transition:
+            opacity var(--t-mid) var(--ease-out),
+            transform var(--t-mid) var(--ease-out);
+        }
+        .t-slide.is-active {
+          opacity: 1;
+          transform: none;
+          pointer-events: auto;
+          position: relative;
+        }
+        .t-text {
+          font-size: 1.25rem;
+          line-height: 1.6;
+          color: #fff;
+          font-style: italic;
+          margin: 0 0 2rem 0;
+        }
+        .t-author {
+          opacity: 0;
+          transform: translateY(6px);
+          transition:
+            opacity var(--t-mid) var(--ease-out),
+            transform var(--t-mid) var(--ease-out);
+        }
+        .t-slide.is-active .t-author {
+          opacity: 1;
+          transform: none;
+          transition-delay: 0.12s;
+        }
+        .t-name {
+          color: var(--yellow);
+          font-size: 1.1rem;
+          margin: 0 0 0.25rem 0;
+        }
+        .t-role {
+          color: rgba(255,255,255,0.6);
+          font-size: 0.9rem;
+          margin: 0;
+        }
+        .t-project { color: #fff; }
+        .testimonials-dots {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+          margin-top: 3rem;
+        }
+        .t-dot {
+          position: relative;
+          width: 0.5rem;
+          height: 0.5rem;
+          padding: 0;
+          border-radius: 1rem;
+          background: rgba(255,255,255,0.2);
+          border: none;
+          cursor: pointer;
+          overflow: hidden;
+          transition:
+            width var(--t-mid) var(--ease-spring),
+            background var(--t-mid) var(--ease-soft);
+        }
+        .t-dot.is-active {
+          width: 2rem;
+          background: rgba(255,255,255,0.2);
+        }
+        .t-dot-progress {
+          position: absolute;
+          inset: 0;
+          background: var(--yellow);
+          transform: scaleX(0);
+          transform-origin: left;
+          opacity: 0;
+        }
+        .t-dot.is-active .t-dot-progress {
+          opacity: 1;
+          animation: t-progress 6s linear forwards;
+        }
+        @keyframes t-progress {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .t-orb { animation: none !important; }
+          .t-slide,
+          .t-author { transition: none !important; }
+          .t-dot-progress { animation: none !important; opacity: 0; }
+          .t-dot { transition: none !important; }
+        }
+      `}} />
     </section>
   )
 }

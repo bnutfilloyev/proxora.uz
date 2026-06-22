@@ -1,3 +1,7 @@
+'use client'
+import { useEffect, useRef, useState } from 'react'
+import Reveal from './Reveal'
+
 const steps = [
   {
     num: '01',
@@ -22,22 +26,65 @@ const steps = [
 ]
 
 export default function Process() {
+  const connectorRef = useRef(null)
+  const [drawn, setDrawn] = useState(false)
+
+  useEffect(() => {
+    const el = connectorRef.current
+    if (!el) return
+
+    const reduce =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reduce) {
+      setDrawn(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setDrawn(true)
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <section className="section" id="process">
       <div className="container">
         <div className="section-head">
           <div>
-            <p className="section-label">03 — Jarayon</p>
+            <p className="section-label">05 — Jarayon</p>
             <h2 className="section-title">Qanday<br />ishlaymiz</h2>
           </div>
         </div>
         <div className="process-grid">
-          {steps.map(s => (
-            <div key={s.num} className="process-step">
+          <div
+            ref={connectorRef}
+            className={`process-connector u-line-draw${drawn ? ' is-in' : ''}`}
+            aria-hidden="true"
+          />
+          {steps.map((s, i) => (
+            <Reveal
+              key={s.num}
+              className="process-step u-bar-left"
+              data-anim="left"
+              delay={i * 80}
+            >
               <div className="process-big-num">{s.num}</div>
               <div className="process-name">{s.name}</div>
               <p className="process-desc">{s.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

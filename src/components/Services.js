@@ -1,8 +1,10 @@
+import Reveal from './Reveal'
+
 const services = [
   {
     num: '01',
     name: 'Web Saytlar',
-    desc: "Korporativ sayt, landing page va e-commerce platformalar. Tez yuklanadigan, SEO-optimized va chiroyli dizayn.",
+    desc: "Korporativ sayt, landing page va e-commerce platformalar. Tez yuklanadigan, qidiruv tizimlariga moslangan (SEO) va chiroyli dizayn.",
   },
   {
     num: '02',
@@ -22,7 +24,7 @@ const services = [
   {
     num: '05',
     name: 'CRM Tizimlar',
-    desc: "Mijozlar boshqaruvi, savdo funnel, hisobot va avtomatlashtirishni birlashtiradigan maxsus platformalar.",
+    desc: "Mijozlar boshqaruvi, savdo bosqichlari (funnel), hisobot va avtomatlashtirishni birlashtiradigan maxsus platformalar.",
   },
   {
     num: '06',
@@ -41,14 +43,25 @@ export default function Services() {
             <h2 className="section-title">Nima<br />qilamiz</h2>
           </div>
         </div>
-        <div className="services-grid">
-          {services.map(s => (
-            <div key={s.num} className="service-card">
-              <div className="service-num">{s.num}</div>
-              <div className="service-name">{s.name}</div>
-              <p className="service-desc">{s.desc}</p>
-            </div>
-          ))}
+        <div className="services-grid glow-cursor">
+          {services.map((s, i) => {
+            const row = Math.floor(i / 3)
+            const col = i % 3
+            return (
+              <Reveal
+                key={s.num}
+                className="service-card u-bar-left"
+                data-anim="scale"
+                delay={(row + col) * 60}
+              >
+                <div className="service-num">{s.num}</div>
+                <div className="service-name">{s.name}</div>
+                <p className="service-desc">{s.desc}</p>
+                <div className="ghost-num" aria-hidden="true">{s.num}</div>
+                <div className="service-arrow" aria-hidden="true">↗</div>
+              </Reveal>
+            )
+          })}
         </div>
       </div>
     </section>

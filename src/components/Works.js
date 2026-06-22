@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import Reveal from './Reveal'
 
 const filters = ['Barchasi', 'Web', 'Bot', 'AI / ML']
 
@@ -19,6 +20,14 @@ const works = [
     desc: "Premium poyafzal onlayn do'koni — eksklyuziv modellar",
     bg: 'linear-gradient(140deg, #1a1208 0%, #2d1e0a 100%)',
     url: '#',
+    cat: 'Web',
+  },
+  {
+    name: 'Prosales.uz',
+    tag: 'SaaS Platform',
+    desc: "Savdo jamoalari uchun mijozlar va bitimlarni boshqarish CRM tizimi",
+    bg: 'linear-gradient(140deg, #0d2a2a 0%, #0f3838 100%)',
+    url: 'https://prosales.uz',
     cat: 'Web',
   },
   {
@@ -115,8 +124,27 @@ const works = [
 
 export default function Works() {
   const [active, setActive] = useState('Barchasi')
+  const filtersRef = useRef(null)
+  const btnRefs = useRef({})
+  const [pill, setPill] = useState({ x: 0, w: 0, ready: false })
 
   const filtered = active === 'Barchasi' ? works : works.filter(w => w.cat === active)
+
+  useEffect(() => {
+    const wrap = filtersRef.current
+    const btn = btnRefs.current[active]
+    if (!wrap || !btn) return
+    const update = () => {
+      setPill({
+        x: btn.offsetLeft,
+        w: btn.offsetWidth,
+        ready: true,
+      })
+    }
+    update()
+    window.addEventListener('resize', update, { passive: true })
+    return () => window.removeEventListener('resize', update)
+  }, [active])
 
   return (
     <section className="section" id="works">
@@ -126,10 +154,22 @@ export default function Works() {
             <p className="section-label">02 — Ishlarimiz</p>
             <h2 className="section-title">Tanlangan<br />loyihalar</h2>
           </div>
-          <div className="works-filters">
+          <div className="works-filters" ref={filtersRef}>
+            <span
+              className="works-filter-pill"
+              aria-hidden="true"
+              style={{
+                transform: `translateX(${pill.x}px)`,
+                width: `${pill.w}px`,
+                opacity: pill.ready ? 1 : 0,
+              }}
+            />
             {filters.map(f => (
               <button
                 key={f}
+                type="button"
+                ref={(el) => { btnRefs.current[f] = el }}
+                aria-pressed={active === f}
                 className={`works-filter-btn${active === f ? ' active' : ''}`}
                 onClick={() => setActive(f)}
               >
@@ -138,24 +178,55 @@ export default function Works() {
             ))}
           </div>
         </div>
-        <div className="works-grid">
-          {filtered.map(w => (
-            <a
-              key={w.name}
-              href={w.url}
-              target={w.url !== '#' ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              className="work-card"
-            >
-              <div className="work-card-bg" style={{ background: w.bg }} />
-              <div className="work-overlay">
-                <p className="work-tag">{w.tag}</p>
-                <h3 className="work-name">{w.name}</h3>
-                <p className="work-desc-text">{w.desc}</p>
-              </div>
-              {w.url !== '#' && <div className="work-arrow">↗</div>}
-            </a>
-          ))}
+        <p className="works-result-count" aria-live="polite">
+          {filtered.length} ta loyiha
+        </p>
+        <div className="works-grid" key={active}>
+          {filtered.map((w, i) => {
+            const isLive = w.url !== '#'
+            const delay = Math.min(i * 60, 480)
+            const inner = (
+              <>
+                <div className="work-card-bg" style={{ background: w.bg }} aria-hidden="true" />
+                <div className="work-overlay">
+                  <p className="work-tag">{w.tag}</p>
+                  <h3 className="work-name u-underline">{w.name}</h3>
+                  <p className="work-desc-text">{w.desc}</p>
+                </div>
+                {isLive ? (
+                  <div className="work-arrow" aria-hidden="true">↗</div>
+                ) : (
+                  <span className="work-soon-tag">Tez orada</span>
+                )}
+              </>
+            )
+
+            return isLive ? (
+              <Reveal
+                key={w.name}
+                as="a"
+                className="work-card"
+                data-anim="scale"
+                delay={delay}
+                href={w.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${w.name} — ${w.tag} (yangi oynada ochiladi)`}
+              >
+                {inner}
+              </Reveal>
+            ) : (
+              <Reveal
+                key={w.name}
+                className="work-card soon"
+                data-anim="scale"
+                delay={delay}
+                aria-label={`${w.name} — ${w.tag} (tez orada)`}
+              >
+                {inner}
+              </Reveal>
+            )
+          })}
         </div>
       </div>
     </section>
