@@ -177,6 +177,11 @@ export default function Hero() {
         }
         .hero-headline .line-inner {
           display: block;
+          /* room below the baseline so overflow:hidden doesn't clip descenders
+             (y in "yaratamiz", q tail in "Raqamli", the .hl box bottom).
+             Padding is on the inner — not the mask — so translateY(100%)
+             still hides it fully on entrance with no sliver. */
+          padding-bottom: 0.14em;
           transform: translateY(100%);
           transition: transform var(--t-xslow, 1.1s) var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
           will-change: transform;

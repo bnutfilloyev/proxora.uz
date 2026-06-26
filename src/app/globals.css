@@ -1299,9 +1299,10 @@ button:focus-visible,
 }
 
 /* Contact headline: line-mask overflow:hidden + line-height 0.95 was clipping
-   the descenders (g/y/k). Give the mask room below the baseline. */
+   the descenders (g/y/k). Padding on the inner (not the mask) gives the
+   descenders room without showing a sliver during the translateY entrance. */
 .cta-headline { line-height: 1; }
-.cta-headline .line-mask { padding-bottom: 0.12em; }
+.cta-headline .line-inner { padding-bottom: 0.12em; }
 
 /* ── REDUCED MOTION ────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
