@@ -63,7 +63,7 @@ export default function FAQ() {
                   role="region"
                   className="faq-answer"
                   style={{
-                    maxHeight: isOpen ? '500px' : '0',
+                    maxHeight: isOpen ? '1000px' : '0',
                     opacity: isOpen ? 1 : 0,
                     padding: isOpen ? '0 1.5rem 1.5rem 1.5rem' : '0 1.5rem'
                   }}

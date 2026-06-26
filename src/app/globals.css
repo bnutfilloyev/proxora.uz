@@ -1215,16 +1215,28 @@ button:focus-visible,
 @media (max-width: 768px) {
   .navbar-links       { display: none; }
   .nav-cta-desktop    { display: none; }
-  .hamburger          { display: flex; }
+  /* 44px tap area; negative margin keeps the icon flush to the container edge */
+  .hamburger          { display: flex; width: 44px; height: 44px; padding: 9px; margin-right: -9px; }
   .section-head       { flex-direction: column; align-items: flex-start; }
   .works-filters      { width: 100%; }
   .hero-stat          { padding: 0 1.5rem; }
+}
+
+/* Short viewports (landscape phones): mobile menu must scroll, not clip */
+@media (max-width: 768px) and (max-height: 640px) {
+  .mobile-menu { justify-content: flex-start; overflow-y: auto; }
 }
 
 @media (max-width: 640px) {
   .services-grid { grid-template-columns: 1fr; }
   .process-grid  { grid-template-columns: 1fr; }
   .works-grid    { grid-template-columns: 1fr; }
+
+  /* Headline floor (54px) overflows narrow phones on the unbreakable
+     "mahsulotlar" — scale it down so the accent word never clips. */
+  .hero-headline { font-size: clamp(38px, 13vw, 56px); }
+  /* Ambient scroll cue overlaps the stacked stats on phones */
+  .hero .scroll-cue { display: none; }
 
   .works-filters {
     overflow-x: auto;
@@ -1234,7 +1246,22 @@ button:focus-visible,
     scrollbar-width: none;
   }
   .works-filters::-webkit-scrollbar { display: none; }
-  .works-filter-btn { flex-shrink: 0; }
+  /* ≥44px tap targets for the filter pills */
+  .works-filter-btn {
+    flex-shrink: 0;
+    padding: 12px 18px;
+    font-size: 12px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Tighten oversized decorative numerals + fixed gaps on full-width cards */
+  .ghost-num   { font-size: clamp(60px, 20vw, 96px); }
+  .service-num { margin-bottom: 1.2rem; }
+
+  /* Footer links get a real tap area */
+  .footer-links a { padding: 8px 0; display: inline-block; }
 
   .hero-stats { grid-template-columns: 1fr; }
   .hero-stat {
@@ -1255,6 +1282,26 @@ button:focus-visible,
   .orb--drift2 { animation: none; }
   .process-connector { display: none; }
 }
+
+/* ── TOUCH FALLBACKS (no :hover affordances) ── */
+/* On touch devices the hover-only cues never fire, so the cards look dead and
+   give no signal they're tappable. Reveal the static affordances permanently. */
+@media (hover: none) {
+  .service-card .service-arrow { opacity: 1; transform: none; }
+  .service-card.u-bar-left::before { height: 100%; }
+  .work-card .work-arrow { opacity: 1; transform: scale(1); }
+  /* tap feedback in place of hover for live work cards */
+  .work-card:active .work-card-bg { transform: scale(1.04); }
+  .work-card:active .work-overlay {
+    background: linear-gradient(to top, rgba(12,40,24,0.98) 0%, rgba(12,40,24,0.45) 55%, rgba(12,40,24,0.12) 100%);
+  }
+  .btn-ghost { min-height: 44px; padding: 10px 4px; }
+}
+
+/* Contact headline: line-mask overflow:hidden + line-height 0.95 was clipping
+   the descenders (g/y/k). Give the mask room below the baseline. */
+.cta-headline { line-height: 1; }
+.cta-headline .line-mask { padding-bottom: 0.12em; }
 
 /* ── REDUCED MOTION ────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

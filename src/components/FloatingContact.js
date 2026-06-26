@@ -70,7 +70,8 @@ export default function FloatingContact() {
           position: fixed;
           bottom: 2rem;
           right: 2rem;
-          z-index: 9999;
+          /* below the mobile-menu overlay (z-index 90) so it doesn't float over it */
+          z-index: 80;
           display: flex;
           flex-direction: row;
           align-items: center;

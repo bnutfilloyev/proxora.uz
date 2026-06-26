@@ -151,11 +151,19 @@ export default function About() {
           bottom: -2.5rem;
           right: -0.5rem;
           font-family: var(--font-display), sans-serif;
-          font-size: 16rem;
+          font-size: clamp(8rem, 28vw, 16rem);
           font-weight: 800;
           line-height: 1;
           color: var(--hair);
           pointer-events: none;
+        }
+        @media (max-width: 640px) {
+          .about-watermark { bottom: -1.5rem; right: -0.25rem; }
+        }
+        /* Reclaim width on the narrowest phones so stat labels don't over-wrap */
+        @media (max-width: 400px) {
+          .about-stat-card { gap: 1rem; padding: 1rem 1.1rem; left: 1.25rem; right: 1.25rem; bottom: 1.25rem; }
+          .about-mark { top: 1.25rem; left: 1.25rem; }
         }
         .about-mark {
           position: absolute;

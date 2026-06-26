@@ -57,6 +57,7 @@ export default function Testimonials() {
           onMouseLeave={() => setPaused(false)}
           onFocus={() => setPaused(true)}
           onBlur={() => setPaused(false)}
+          onTouchStart={() => setPaused(true)}
         >
           <span aria-hidden="true" className="t-quote-mark glow-text">&ldquo;</span>
 
@@ -82,16 +83,17 @@ export default function Testimonials() {
             {testimonials.map((t, i) => (
               <button
                 key={t.id}
-                onClick={() => setActive(i)}
+                onClick={() => { setActive(i); setPaused(true) }}
                 aria-label={`Sharh ${i + 1}`}
                 aria-pressed={active === i}
                 className={`t-dot ${active === i ? 'is-active' : ''}`}
               >
-                <span
-                  className="t-dot-progress"
-                  aria-hidden="true"
-                  style={{ animationPlayState: active === i && !paused ? 'running' : 'paused' }}
-                />
+                <span className="t-dot-pill" aria-hidden="true">
+                  <span
+                    className="t-dot-progress"
+                    style={{ animationPlayState: active === i && !paused ? 'running' : 'paused' }}
+                  />
+                </span>
               </button>
             ))}
           </div>
@@ -122,7 +124,7 @@ export default function Testimonials() {
         .t-quote-mark {
           display: block;
           font-family: var(--font-display), serif;
-          font-size: 7rem;
+          font-size: clamp(3.5rem, 14vw, 7rem);
           line-height: 0.6;
           color: var(--yellow-a16);
           margin-bottom: 0.5rem;
@@ -186,27 +188,34 @@ export default function Testimonials() {
         .t-project { color: #fff; }
         .testimonials-dots {
           display: flex;
-          gap: 0.5rem;
+          gap: 0.25rem;
           justify-content: center;
-          margin-top: 3rem;
+          margin-top: 2.5rem;
         }
+        /* Button is a 44px tap target; the visible pill lives inside it */
         .t-dot {
-          position: relative;
-          width: 0.5rem;
-          height: 0.5rem;
+          width: 44px;
+          height: 44px;
           padding: 0;
-          border-radius: 1rem;
-          background: rgba(255,255,255,0.2);
+          background: transparent;
           border: none;
           cursor: pointer;
-          overflow: hidden;
-          transition:
-            width var(--t-mid) var(--ease-spring),
-            background var(--t-mid) var(--ease-soft);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        .t-dot.is-active {
-          width: 2rem;
+        .t-dot-pill {
+          position: relative;
+          display: block;
+          width: 0.5rem;
+          height: 0.5rem;
+          border-radius: 1rem;
           background: rgba(255,255,255,0.2);
+          overflow: hidden;
+          transition: width var(--t-mid) var(--ease-spring);
+        }
+        .t-dot.is-active .t-dot-pill {
+          width: 2rem;
         }
         .t-dot-progress {
           position: absolute;
@@ -229,7 +238,7 @@ export default function Testimonials() {
           .t-slide,
           .t-author { transition: none !important; }
           .t-dot-progress { animation: none !important; opacity: 0; }
-          .t-dot { transition: none !important; }
+          .t-dot-pill { transition: none !important; }
         }
       `}} />
     </section>

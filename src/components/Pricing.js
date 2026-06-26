@@ -113,7 +113,12 @@ export default function Pricing() {
           border-radius: 4px;
           overflow: hidden;
         }
-        @media (min-width: 768px) {
+        /* 2-up on tablets, 3-up only on real desktops — avoids the cramped
+           3-column squeeze at the 768px mobile-switch boundary */
+        @media (min-width: 700px) {
+          .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 980px) {
           .pricing-grid { grid-template-columns: repeat(3, 1fr); }
         }
         .pricing-card {

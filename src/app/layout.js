@@ -74,11 +74,6 @@ export const metadata = {
       "Web, mobil, AI va Telegram bot yechimlari. O'zbekiston bizneslarini raqamlashtiramiz.",
     images: ['/logo-og.png'],
   },
-  icons: {
-    icon: '/logo-icon.png',
-    shortcut: '/logo-icon.png',
-    apple: '/logo-icon.png',
-  },
   manifest: '/manifest.webmanifest',
 }
 
